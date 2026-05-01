@@ -10,7 +10,7 @@
 #define DEBUG false
 #define ONE_LINE false
 
-#define STATUS_TIMEOUT 10000
+#define STATUS_TIMEOUT 1000
 
 PicoMonitor::PicoMonitor(std::string port) : Monitor() {
 	this->port = port;
@@ -169,7 +169,7 @@ void PicoMonitor::request(byte func, unsigned int value){
 }
 
 void PicoMonitor::statusUpdate() {
-	uint8_t write_data[8];
+	uint8_t write_data[7];
 	write_data[0] = '{';
 	write_data[1] = 2; //Read Battery Value
 	write_data[2] = 0;
@@ -185,9 +185,9 @@ void PicoMonitor::statusUpdate() {
 	write_data[1] = 6; //Read Backlight Value
 	write(serial_fd, write_data, sizeof(write_data));
 	
-	for(int i = 0; i < 4; i++) {
-		request(1, i); //Read Controller States
-	}
+	//for(int i = 0; i < 4; i++) {
+		request(1, 1); //Read Controller States
+	//}
 }
 
 int PicoMonitor::openSerialPort(const char* portName) {

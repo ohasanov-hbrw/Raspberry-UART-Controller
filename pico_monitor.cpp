@@ -185,7 +185,7 @@ void PicoMonitor::statusUpdate() {
 	write_data[1] = 6; //Read Backlight Value
 	write(serial_fd, write_data, sizeof(write_data));
 	
-    std::cout << "StatusUpdate\n";
+    //std::cout << "StatusUpdate\n";
 	//for(int i = 0; i < 4; i++) {
 		request(1, 1); //Read Controller States
 	//}

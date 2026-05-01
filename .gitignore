@@ -30,8 +30,3 @@
 *.exe
 *.out
 *.app
-
-lodepng.h
-lodepng.cpp
-
-config.prop

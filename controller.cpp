@@ -66,9 +66,10 @@ void ControllerManager::setup_uinput_device(int joystick_id) {
 
     memset(&usetup, 0, sizeof(usetup));
     usetup.id.bustype = BUS_USB;
-    usetup.id.vendor = 0x5348; // Sample Vendor
-    usetup.id.product = 0x0100 + joystick_id; // Unique product ID for each joystick
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "ProMini UART Controller %d", joystick_id);
+    usetup.id.vendor = 0x045e; // Sample Vendor
+    usetup.id.product = 0x028e;// + joystick_id; // Unique product ID for each joystick
+    usetup.id.version=0x110;
+    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "Microsoft X-Box 360 pad %d", joystick_id);
 
     ioctl(fd, UI_DEV_SETUP, &usetup);
     ioctl(fd, UI_DEV_CREATE);

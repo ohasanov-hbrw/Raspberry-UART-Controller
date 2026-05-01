@@ -368,10 +368,10 @@ bool joyCheck(ControllerData controllers[], int c) {
 	
     int axisValue = 0;
 	if(controllers[c].button_states[DPAD_UP]){
-		axisValue = 128;
+		axisValue = -128;
 	}
 	if(controllers[c].button_states[DPAD_DOWN]){
-		axisValue = -128;
+		axisValue = 128;
 	}
 	
 	

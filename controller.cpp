@@ -140,7 +140,7 @@ void ControllerManager::emulateJoystick(byte controller_index, byte button_count
         else if(i == X_BUTTON) code = BTN_X;
         else if(i == Y_BUTTON) code = BTN_Y;
         else if(i == L_BUTTON) code = BTN_TL;
-        else if(i == R_BUTTON) code = BTN_TL;
+        else if(i == R_BUTTON) code = BTN_TRIGGER;
         else if(i == START_BUTTON) code = BTN_START;
         else if(i == SELECT_BUTTON) code = BTN_SELECT;
         else if(i == EXTRA_BUTTON) code = BTN_EXTRA;

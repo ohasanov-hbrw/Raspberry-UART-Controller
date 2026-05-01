@@ -103,7 +103,7 @@ void PicoMonitor::processBuffer() {
         size_t message_len = message_end - message_start;
         byte* message = buffer + message_start;
 
-        if(true) {
+        if(false) {
             if(false) std::cout << "\033[A";
             std::cout << "\rExtracted message: ";
             for(size_t j = 0; j < message_len; ++j) {

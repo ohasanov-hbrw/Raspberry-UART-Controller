@@ -40,9 +40,13 @@ There are two buttons named Extra and Options. Extra is supposed to be the hotke
 ### Hotkeys (changeable under joyCheck in main.cpp):
 
 Options + A + L + R for a sec -> reboot
+
 Options + A + L + R for a sec -> shutdown
+
 Options + B -> Battery
+
 Options + X -> Volume (with DPAD UP DOWN to change)
+
 Options + Y -> Brightness (with DPAD UP DOWN to change)
 
 ### Thanks

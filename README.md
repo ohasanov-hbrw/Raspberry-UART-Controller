@@ -41,7 +41,7 @@ There are two buttons named Extra and Options. Extra is supposed to be the hotke
 
 Options + A + L + R for a sec -> reboot
 
-Options + A + L + R for a sec -> shutdown
+Options + B + L + R for a sec -> shutdown
 
 Options + B -> Battery
 

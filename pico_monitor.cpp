@@ -157,26 +157,34 @@ uint16_t PicoMonitor::crc16_ccitt_xmodem(const uint8_t* data, size_t length) {
 }
 
 void PicoMonitor::request(byte func, unsigned int value){
-	byte buffer[7];
+	byte buffer[11];
 	buffer[0] = '{';
 	buffer[1] = (byte)(func & 0xFF);
 	buffer[2] = (byte)((value >> 0) & 0xFF);
 	buffer[3] = (byte)((value >> 8) & 0xFF);
 	buffer[4] = (byte)((value >> 16) & 0xFF);
 	buffer[5] = (byte)((value >> 24) & 0xFF);
-	buffer[6] = '}';
+	buffer[6] = 0;
+    buffer[7] = 0;
+    buffer[8] = 0;
+    buffer[9] = 0;
+	buffer[10] = '}';
 	write(serial_fd, buffer, sizeof(buffer));
 }
 
 void PicoMonitor::statusUpdate() {
-	uint8_t write_data[7];
+	uint8_t write_data[11];
 	write_data[0] = '{';
 	write_data[1] = 2; //Read Battery Value
 	write_data[2] = 0;
 	write_data[3] = 0;
 	write_data[4] = 0;
 	write_data[5] = 0;
-	write_data[6] = '}';
+    write_data[6] = 0;
+    write_data[7] = 0;
+    write_data[8] = 0;
+    write_data[9] = 0;
+	write_data[10] = '}';
 	write(serial_fd, write_data, sizeof(write_data));
 	
 	write_data[1] = 4; //Read Fan Value

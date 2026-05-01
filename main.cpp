@@ -902,7 +902,7 @@ int main(int argc, char* argv[]) {
 	audDevice               = config.get("audioDevice", ""); //Could be PCM, Headphone, or maybe something else
 	bool initialized        = config.getBool("initialized", false);
 	std::string monitorType = config.get("monitor", ""); //0 for unset, 1 for pico, 2 for gpio
-    std::string interface   = config.get("interface", "/dev/ttyUSB0"); // normally /dev/serial0
+    std::string interface   = config.get("interface", "/dev/serial0"); // normally /dev/serial0
 	
 	SELECT_BUTTON = config.getInt("BUTTON_SELECT", -1);
 	START_BUTTON  = config.getInt("BUTTON_START", -1);

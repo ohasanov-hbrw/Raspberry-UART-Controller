@@ -164,10 +164,10 @@ void PicoMonitor::request(byte func, unsigned int value){
 	buffer[3] = (byte)((value >> 8) & 0xFF);
 	buffer[4] = (byte)((value >> 16) & 0xFF);
 	buffer[5] = (byte)((value >> 24) & 0xFF);
-	buffer[6] = 0;
-    buffer[7] = 0;
-    buffer[8] = 0;
-    buffer[9] = 0;
+	buffer[6] = 'a';
+    buffer[7] = 'a';
+    buffer[8] = 'a';
+    buffer[9] = 'a';
 	buffer[10] = '}';
 	write(serial_fd, buffer, sizeof(buffer));
 }
@@ -176,14 +176,14 @@ void PicoMonitor::statusUpdate() {
 	uint8_t write_data[11];
 	write_data[0] = '{';
 	write_data[1] = 2; //Read Battery Value
-	write_data[2] = 0;
-	write_data[3] = 0;
-	write_data[4] = 0;
-	write_data[5] = 0;
-    write_data[6] = 0;
-    write_data[7] = 0;
-    write_data[8] = 0;
-    write_data[9] = 0;
+	write_data[2] = 'a';
+	write_data[3] = 'a';
+	write_data[4] = 'a';
+	write_data[5] = 'a';
+    write_data[6] = 'a';
+    write_data[7] = 'a';
+    write_data[8] = 'a';
+    write_data[9] = 'a';
 	write_data[10] = '}';
 	write(serial_fd, write_data, sizeof(write_data));
 	

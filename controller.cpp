@@ -6,6 +6,7 @@
 #include <cstring>
 #include <chrono>
 #include <linux/input-event-codes.h>
+#include <linux/uinput.h>
 #include <thread>
 #include <fcntl.h>
 
@@ -57,18 +58,17 @@ void ControllerManager::setup_uinput_device(int joystick_id) {
     ioctl(fd, UI_SET_KEYBIT, BTN_TR);
 
     //an extra button for retropie!
-    ioctl(fd, UI_SET_KEYBIT, BTN_EXTRA);
+    ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
 	
-    ioctl(fd, UI_SET_KEYBIT, BTN_DPAD_UP);
-    ioctl(fd, UI_SET_KEYBIT, BTN_DPAD_DOWN);
-    ioctl(fd, UI_SET_KEYBIT, BTN_DPAD_LEFT);
-    ioctl(fd, UI_SET_KEYBIT, BTN_DPAD_RIGHT);
+    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
+    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
 
     memset(&usetup, 0, sizeof(usetup));
     usetup.id.bustype = BUS_USB;
-    usetup.id.vendor = 0x046d; // Sample Vendor
-    usetup.id.product = 0xc216  + joystick_id; // Unique product ID for each joystick
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "F310DirectInput %d", joystick_id);
+    usetup.id.vendor = 0x045e; // Sample Vendor
+    usetup.id.product = 0x028e;  //+ joystick_id; // Unique product ID for each joystick
+    usetup.id.version=0x110;
+    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "Microsoft X-Box 360 pad %d", joystick_id);
 
     ioctl(fd, UI_DEV_SETUP, &usetup);
     ioctl(fd, UI_DEV_CREATE);
@@ -143,11 +143,11 @@ void ControllerManager::emulateJoystick(byte controller_index, byte button_count
         else if(i == R_BUTTON) code = BTN_TR;
         else if(i == START_BUTTON) code = BTN_START;
         else if(i == SELECT_BUTTON) code = BTN_SELECT;
-        else if(i == EXTRA_BUTTON) code = BTN_EXTRA;
-        else if(i == DPAD_UP) code = BTN_DPAD_UP;
-        else if(i == DPAD_DOWN) code = BTN_DPAD_DOWN;
-        else if(i == DPAD_LEFT) code = BTN_DPAD_LEFT;
-        else if(i == DPAD_RIGHT) code = BTN_DPAD_RIGHT;
+        else if(i == EXTRA_BUTTON) code = BTN_MODE;
+        //else if(i == DPAD_UP) code = BTN_DPAD_UP;
+        //else if(i == DPAD_DOWN) code = BTN_DPAD_DOWN;
+        //else if(i == DPAD_LEFT) code = BTN_DPAD_LEFT;
+        //else if(i == DPAD_RIGHT) code = BTN_DPAD_RIGHT;
         else continue;
         sendEvent(fd, EV_KEY, code, controllers[controller_index - 1].button_states[i]);
     }
@@ -190,8 +190,19 @@ void ControllerManager::emulateJoystick(byte controller_index, byte button_count
 	//}
 
 
-
-    //sendEvent(fd, EV_SYN, SYN_REPORT, 0);
+    if(controllers[controller_index - 1].button_states[DPAD_UP]){
+        sendEvent(fd, EV_ABS, ABS_HAT0Y, -32768);
+    }
+    if(controllers[controller_index - 1].button_states[DPAD_DOWN]){
+        sendEvent(fd, EV_ABS, ABS_HAT0Y, 32767);
+    }
+    if(controllers[controller_index - 1].button_states[DPAD_LEFT]){
+        sendEvent(fd, EV_ABS, ABS_HAT0X, -32768);
+    }
+    if(controllers[controller_index - 1].button_states[DPAD_RIGHT]){
+        sendEvent(fd, EV_ABS, ABS_HAT0X, 32767);
+    }
+    sendEvent(fd, EV_SYN, SYN_REPORT, 0);
 
     if(false) {
         std::cout << "\rAxes: ";

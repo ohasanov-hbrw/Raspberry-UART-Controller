@@ -10,7 +10,7 @@
 #define DEBUG false
 #define ONE_LINE false
 
-#define STATUS_TIMEOUT 100
+#define STATUS_TIMEOUT 10000
 
 PicoMonitor::PicoMonitor(std::string port) : Monitor() {
 	this->port = port;
@@ -222,7 +222,7 @@ int PicoMonitor::openSerialPort(const char* portName) {
 }
 
 bool PicoMonitor::hasFeatures(int features){
-	const int have = FEATURE_FAN | FEATURE_BATTERY | FEATURE_BACKLIGHT;
+	const int have = FEATURE_BATTERY | FEATURE_BACKLIGHT;
 	features &= ~have;
 	
 	return features == 0;

@@ -17,7 +17,7 @@
 
 #define VERSION "0.1"
 
-#define OVERLAY_TIMEOUT 20
+#define OVERLAY_TIMEOUT 5
 #define STATUS_TIMEOUT 10
 #define FAN_MIN_VALUE 125
 
@@ -29,12 +29,18 @@
 #define VREF_ADC 3.238
 #define VOFF 0.1
 
+#define OVERLAY_BATTERY 0
+#define OVERLAY_BRIGHTNESS 4
+#define OVERLAY_FAN 2
+#define OVERLAY_VOLUME 1
+#define OVERLAY_CLOSED -1
+
 #define DEBUG_GPIO_OVERLAY false
 
 using String = std::string;
 
 int VOLUME_STEP_SIZE = 1, VOLUME_MIN = 0, VOLUME_MAX = 1;
-int SELECT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON;
+int SELECT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, EXTRA_BUTTON, OPTIONS_BUTTON , DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT;
 bool joyCheck(ControllerData[], int);
 std::string getLocalFile(const std::string& filename);
 
@@ -350,6 +356,8 @@ void controlVolume(int value) {
 bool joyCheck(ControllerData controllers[], int c) {
 	bool selectPressed = controllers[c].button_states[SELECT_BUTTON];
     bool startPressed  = controllers[c].button_states[START_BUTTON];
+
+	bool optionsPressed = controllers[c].button_states[OPTIONS_BUTTON]; 
 	
     bool rPressed      = controllers[c].button_states[R_BUTTON];
     bool lPressed      = controllers[c].button_states[L_BUTTON];
@@ -358,18 +366,26 @@ bool joyCheck(ControllerData controllers[], int c) {
     bool bPressed      = controllers[c].button_states[B_BUTTON];
     bool aPressed      = controllers[c].button_states[A_BUTTON];
 	
-    int axisValue = controllers[c].axis[0].y;
+    int axisValue = 0;
+	if(controllers[c].button_states[DPAD_UP]){
+		axisValue = 128;
+	}
+	if(controllers[c].button_states[DPAD_DOWN]){
+		axisValue = -128;
+	}
 	
-	if(selectPressed && startPressed && rPressed && lPressed) {
+	
+	if(optionsPressed && aPressed && rPressed && lPressed) {
 		special_counter++;
-		std::cout << special_counter << std::endl;
+		//std::cout << special_counter << std::endl;
 		if(special_counter >= 1000) {
+			//REBOOT
 		    sync(); // Flush filesystem buffers
             reboot(RB_AUTOBOOT);
 			exit(0);
 		}
 		return true;
-	} else if(selectPressed && xPressed && rPressed && lPressed) {
+	} else if(optionsPressed && bPressed && rPressed && lPressed) {
 		special_counter++;
 		if(special_counter >= 1000) {
 	        sync(); // Flush filesystem buffers
@@ -379,84 +395,94 @@ bool joyCheck(ControllerData controllers[], int c) {
         return true;
 	}
 	
-	if(selectPressed && bPressed) {
+	if(optionsPressed && bPressed) {
 		if(special_counter == 0) {
-			overlay_id = 0;
+			std::cout << "OVERLAY BATTERY " << manager.getBatteryAverage() << std::endl;
+			overlay_id = OVERLAY_BATTERY;
 			overlay_counter = 0;
 		    special_counter++;
 		}
         return true;
-	} else if(selectPressed && aPressed && axisValue != 0) {
+	} 
+	//else if(selectPressed && aPressed && axisValue != 0) {
+	//	int start_delay = 1000;
+	//	int cont_delay = 100;
+	//	if(special_counter == 1) {
+	//		controlFan(axisValue);
+	//		overlay_id = 2;
+	//		overlay_counter = 0;
+	//	}
+	//	special_counter++;
+	//	if(special_counter == start_delay) {
+	//		controlFan(axisValue);
+	//		overlay_id = 2;
+	//		overlay_counter = 0;
+	//	}
+	//	if(special_counter >= (start_delay + cont_delay)) {
+	//		special_counter = start_delay - 1;
+	//	}
+    //    return true;
+	//} //not using a fan!
+	//else if(selectPressed && aPressed) {
+	//	if(special_counter == 0) {
+	//		overlay_id = 2;
+	//		overlay_counter = 0;
+	//	}
+	//	special_counter = 1;
+    //    return true;
+	//} 
+	else if(optionsPressed && xPressed && axisValue != 0) {
 		int start_delay = 1000;
 		int cont_delay = 100;
 		if(special_counter == 1) {
-			controlFan(axisValue);
-			overlay_id = 2;
+			std::cout << "OVERLAY VOLUME " << axisValue << std::endl;
+			controlVolume(axisValue);
+			overlay_id = OVERLAY_VOLUME;
 			overlay_counter = 0;
 		}
 		special_counter++;
 		if(special_counter == start_delay) {
-			controlFan(axisValue);
-			overlay_id = 2;
+			std::cout << "OVERLAY VOLUME " << axisValue << std::endl;
+			controlVolume(axisValue);
+			overlay_id = OVERLAY_VOLUME;
 			overlay_counter = 0;
 		}
 		if(special_counter >= (start_delay + cont_delay)) {
 			special_counter = start_delay - 1;
 		}
         return true;
-	} else if(selectPressed && aPressed) {
+    } else if(optionsPressed && xPressed) {
 		if(special_counter == 0) {
-			overlay_id = 2;
+			std::cout << "OVERLAY VOLUME " << axisValue << std::endl;
+			overlay_id = OVERLAY_VOLUME;
 			overlay_counter = 0;
 		}
 		special_counter = 1;
         return true;
-	} else if(selectPressed && xPressed && axisValue != 0) {
+	} else if(optionsPressed && yPressed && axisValue != 0) {
 		int start_delay = 1000;
 		int cont_delay = 100;
 		if(special_counter == 1) {
-			controlVolume(axisValue);
-			overlay_id = 1;
+			std::cout << "OVERLAY BRIGHTNESS " << axisValue << std::endl;
+			controlBrightness(axisValue);
+			overlay_id = OVERLAY_BRIGHTNESS;
 			overlay_counter = 0;
 		}
 		special_counter++;
 		if(special_counter == start_delay) {
-			controlVolume(axisValue);
-			overlay_id = 1;
+			std::cout << "OVERLAY BRIGHTNESS " << axisValue << std::endl;
+			controlBrightness(axisValue);
+			overlay_id = OVERLAY_BRIGHTNESS;
 			overlay_counter = 0;
 		}
 		if(special_counter >= (start_delay + cont_delay)) {
 			special_counter = start_delay - 1;
 		}
         return true;
-    } else if(selectPressed && xPressed) {
+    } else if(optionsPressed && yPressed) {
 		if(special_counter == 0) {
-			overlay_id = 1;
-			overlay_counter = 0;
-		}
-		special_counter = 1;
-        return true;
-	} else if(selectPressed && yPressed && axisValue != 0) {
-		int start_delay = 1000;
-		int cont_delay = 100;
-		if(special_counter == 1) {
-			controlBrightness(axisValue);
-			overlay_id = 4;
-			overlay_counter = 0;
-		}
-		special_counter++;
-		if(special_counter == start_delay) {
-			controlBrightness(axisValue);
-			overlay_id = 4;
-			overlay_counter = 0;
-		}
-		if(special_counter >= (start_delay + cont_delay)) {
-			special_counter = start_delay - 1;
-		}
-        return true;
-    } else if(selectPressed && yPressed) {
-		if(special_counter == 0) {
-			overlay_id = 4;
+			std::cout << "OVERLAY BRIGHTNESS " << axisValue << std::endl;
+			overlay_id = OVERLAY_BRIGHTNESS;
 			overlay_counter = 0;
 		}
 		special_counter = 1;
@@ -470,16 +496,16 @@ bool joyCheck(ControllerData controllers[], int c) {
 void drawOverlay(){
 	overlay.clearScreen();
 	switch(overlay_id){
-		case 0: //Battery
+		case OVERLAY_BATTERY: //Battery
 			drawBatteryOverlay(manager.getBatteryAverage());
 		    break;
-		case 1: //Volume
+		case OVERLAY_VOLUME: //Volume
 			drawVolumeOverlay(0, last_vol);
 		    break;
-		case 2: //Fan
+		case OVERLAY_FAN: //Fan
 			drawFanOverlay(manager.fanValue, 0);
 		    break;
-		case 4: //Brightness
+		case OVERLAY_BRIGHTNESS: //Brightness
 			drawBacklightOverlay(manager.backlightValue, 0);
 		    break;
 	}
@@ -794,27 +820,48 @@ bool configurePicotroller(Properties* config){
 	L_BUTTON = getHeldButton();
 	config->setInt("BUTTON_L", L_BUTTON);
 	
-	std::cout << "\33[2K\rHold Volume Adjust: " << std::flush;
+	//change to actual controller
+	std::cout << "\33[2K\rHold X: " << std::flush;
 	X_BUTTON = getHeldButton();
-	config->setInt("BUTTON_VOLUME", X_BUTTON);
+	config->setInt("BUTTON_X", X_BUTTON);
 	
-	if(hasBak){
-		std::cout << "\33[2K\rHold Backlight Adjust: " << std::flush;
-		Y_BUTTON = getHeldButton();
-		config->setInt("BUTTON_BACKLIGHT", Y_BUTTON);
-	}
-	
-	if(hasBat){
-		std::cout << "\33[2K\rHold Battery View: " << std::flush;
-		B_BUTTON = getHeldButton();
-		config->setInt("BUTTON_BATTERY", B_BUTTON);
-	}
-	
-	if(hasFan){
-		std::cout << "\33[2K\rHold Fan Adjust: " << std::flush;
-		A_BUTTON = getHeldButton();
-		config->setInt("BUTTON_FAN", A_BUTTON);
-	}
+	std::cout << "\33[2K\rHold Y" << std::flush;
+	Y_BUTTON = getHeldButton();
+	config->setInt("BUTTON_Y", Y_BUTTON);
+
+	std::cout << "\33[2K\rHold B" << std::flush;
+	B_BUTTON = getHeldButton();
+	config->setInt("BUTTON_B", B_BUTTON);
+
+	std::cout << "\33[2K\rHold A" << std::flush;
+	A_BUTTON = getHeldButton();
+	config->setInt("BUTTON_A", A_BUTTON);
+
+	std::cout << "\33[2K\rHold EXTRA" << std::flush;
+	EXTRA_BUTTON = getHeldButton();
+	config->setInt("BUTTON_EXTRA", EXTRA_BUTTON);
+
+	std::cout << "\33[2K\rHold OPTIONS" << std::flush;
+	OPTIONS_BUTTON = getHeldButton();
+	config->setInt("BUTTON_OPTIONS", OPTIONS_BUTTON);
+
+	std::cout << "\33[2K\rHold DPAD UP" << std::flush;
+	DPAD_UP = getHeldButton();
+	config->setInt("DPAD_UP", DPAD_UP);
+
+	std::cout << "\33[2K\rHold DPAD DOWN" << std::flush;
+	DPAD_DOWN = getHeldButton();
+	config->setInt("DPAD_DOWN", DPAD_DOWN);
+
+	std::cout << "\33[2K\rHold DPAD LEFT" << std::flush;
+	DPAD_LEFT = getHeldButton();
+	config->setInt("DPAD_LEFT", DPAD_LEFT);
+
+	std::cout << "\33[2K\rHold DPAD RIGHT" << std::flush;
+	DPAD_RIGHT = getHeldButton();
+	config->setInt("DPAD_RIGHT", DPAD_RIGHT);
+
+
 	
 	config->flush();
 	std::cout << "\n\nPicoTroller button config has been saved!\n" << std::flush;
@@ -855,16 +902,26 @@ int main(int argc, char* argv[]) {
 	audDevice               = config.get("audioDevice", ""); //Could be PCM, Headphone, or maybe something else
 	bool initialized        = config.getBool("initialized", false);
 	std::string monitorType = config.get("monitor", ""); //0 for unset, 1 for pico, 2 for gpio
-    std::string interface   = config.get("interface", "/dev/serial0");
+    std::string interface   = config.get("interface", "/dev/ttyUSB0"); // normally /dev/serial0
 	
 	SELECT_BUTTON = config.getInt("BUTTON_SELECT", -1);
 	START_BUTTON  = config.getInt("BUTTON_START", -1);
 	L_BUTTON = config.getInt("BUTTON_L", -1);
 	R_BUTTON = config.getInt("BUTTON_R", -1);
-	A_BUTTON = config.getInt("BUTTON_FAN", -1);
-	B_BUTTON = config.getInt("BUTTON_BATTERY", -1);
-	X_BUTTON = config.getInt("BUTTON_VOLUME", -1);
-	Y_BUTTON = config.getInt("BUTTON_BACKLIGHT", -1);
+
+	// proper controllerrr
+	A_BUTTON = config.getInt("BUTTON_A", -1);
+	B_BUTTON = config.getInt("BUTTON_B", -1);
+	X_BUTTON = config.getInt("BUTTON_X", -1);
+	Y_BUTTON = config.getInt("BUTTON_Y", -1);
+
+	DPAD_UP = config.getInt("DPAD_UP", -1);
+	DPAD_DOWN = config.getInt("DPAD_DOWN", -1);
+	DPAD_LEFT = config.getInt("DPAD_LEFT", -1);
+	DPAD_RIGHT = config.getInt("DPAD_RIGHT", -1);
+
+	OPTIONS_BUTTON = config.getInt("BUTTON_OPTIONS", -1);
+	EXTRA_BUTTON = config.getInt("BUTTON_EXTRA", -1);
 	
 	if(strcmp(monitorType, "") == 0){
 		std::cout << "No monitor has been selected, please enter one of the following: gpio, pico (or leave blank to exit)" << std::endl;
@@ -911,8 +968,11 @@ int main(int argc, char* argv[]) {
 		monitor = new PicoMonitor(interface);
 	}
 	
-	config.setBool("initialized", true);
-	config.flush();
+	//remove unnecessary write
+	if(!initialized){
+		config.setBool("initialized", true);
+		config.flush();
+	}
 	
 	manager.setMonitor(monitor);
 	manager.initMonitor();
@@ -948,7 +1008,8 @@ int main(int argc, char* argv[]) {
 		}
 		
 		drawOverlay();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		//10 fps should be enough for overlay, no?
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     controllerThread.join();  // Join the thread before exiting (not reached in this example)

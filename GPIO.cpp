@@ -9,12 +9,14 @@
 #define PUD_DOWN 1
 #define PUD_UP   2
 
+// I AM NOT USING THIS ANYWAY
+
 GPIO::GPIO() {
-    mapGPIO();
+    //mapGPIO();
 }
 
 GPIO::~GPIO() {
-    unmapGPIO();
+    //unmapGPIO();
 }
 
 void GPIO::mapGPIO() {

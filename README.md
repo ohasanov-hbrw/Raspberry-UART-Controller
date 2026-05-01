@@ -28,3 +28,19 @@ To make it start on boot, edit `/etc/rc.local` and add
 ```
 sudo /path/to/pictroller/joystick_emulator&
 ```
+
+
+
+
+This is a version of the whole thing that is meant to be run with a Arduino Pro mini as the Serial slave device. Instead of using axis data for the dpad, just using buttons made more sense to me. Additionally, at least the button mapping was a bit weird, which I (ohasanov) changed to suit my needs.
+
+A (south), B (east), X (west), Y (north) is used for layout.
+There are two buttons named Extra and Options. Extra is supposed to be the hotkey button for Retropie/Retroarch. Options is thought out for the whole overlay thing the original creator of this repo coded in. 
+
+Hotkeys (changeable under joyCheck in main.cpp):
+
+Options + A + L + R for a sec -> reboot
+Options + A + L + R for a sec -> shutdown
+Options + B -> Battery
+Options + X -> Volume (with DPAD UP DOWN to change)
+Options + Y -> Brightness (with DPAD UP DOWN to change)

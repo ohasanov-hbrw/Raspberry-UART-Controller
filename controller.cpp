@@ -5,13 +5,16 @@
 #include <cstdlib>
 #include <cstring>
 #include <chrono>
+#include <linux/input-event-codes.h>
 #include <thread>
 #include <fcntl.h>
 
 using String = std::string;
 
 ControllerManager::ControllerManager(JoyCallback callback) {
+    //FOR DEBUGGG
 	setup_uinput_device(0);
+
     //for(int i = 0; i < 4; ++i) {
     //    setup_uinput_device(i + 1);  // Joystick IDs 1 to 4
 	//	controllers[i].id = i;
@@ -52,6 +55,9 @@ void ControllerManager::setup_uinput_device(int joystick_id) {
     ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
     ioctl(fd, UI_SET_KEYBIT, BTN_TL);
     ioctl(fd, UI_SET_KEYBIT, BTN_TR);
+
+    //an extra button for retropie!
+    ioctl(fd, UI_SET_KEYBIT, BTN_EXTRA);
 	
     ioctl(fd, UI_SET_KEYBIT, BTN_DPAD_UP);
     ioctl(fd, UI_SET_KEYBIT, BTN_DPAD_DOWN);
@@ -62,7 +68,7 @@ void ControllerManager::setup_uinput_device(int joystick_id) {
     usetup.id.bustype = BUS_USB;
     usetup.id.vendor = 0x5348; // Sample Vendor
     usetup.id.product = 0x0100 + joystick_id; // Unique product ID for each joystick
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "Xemplar PicoTroller %d", joystick_id);
+    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "ProMini UART Controller %d", joystick_id);
 
     ioctl(fd, UI_DEV_SETUP, &usetup);
     ioctl(fd, UI_DEV_CREATE);
@@ -129,47 +135,65 @@ void ControllerManager::emulateJoystick(byte controller_index, byte button_count
 
     for(byte i = 0; i < button_count; ++i) {
 		int code;
-        switch (i + 1) {
-            case 1: code = BTN_A; break;
-            case 2: code = BTN_B; break;
-            case 3: code = BTN_X; break;
-            case 4: code = BTN_Y; break;
-            case 5: code = BTN_START; break;
-            case 6: code = BTN_SELECT; break;
-            case 7: code = BTN_TL; break;
-            case 8: code = BTN_TR; break;
-            default: continue;
-        }
+        if(i == A_BUTTON) code = BTN_A;
+        else if(i == B_BUTTON) code = BTN_B;
+        else if(i == X_BUTTON) code = BTN_X;
+        else if(i == Y_BUTTON) code = BTN_Y;
+        else if(i == L_BUTTON) code = BTN_TL;
+        else if(i == R_BUTTON) code = BTN_TL;
+        else if(i == START_BUTTON) code = BTN_START;
+        else if(i == SELECT_BUTTON) code = BTN_SELECT;
+        else if(i == EXTRA_BUTTON) code = BTN_EXTRA;
+        else if(i == DPAD_UP) code = BTN_DPAD_UP;
+        else if(i == DPAD_DOWN) code = BTN_DPAD_DOWN;
+        else if(i == DPAD_LEFT) code = BTN_DPAD_LEFT;
+        else if(i == DPAD_RIGHT) code = BTN_DPAD_RIGHT;
+        else continue;
         sendEvent(fd, EV_KEY, code, controllers[controller_index - 1].button_states[i]);
     }
-	
-    sendEvent(fd, EV_SYN, SYN_REPORT, 0);
-	
-	if(controllers[controller_index - 1].axis[0].x > 100) {
-        sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, 1);
-        sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, 0);
-	} else if(controllers[controller_index - 1].axis[0].x < -100) {
-        sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, 0);
-        sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, 1);
-	} else {
-        sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, 0);
-        sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, 0);
-	}
-	
-	if(controllers[controller_index - 1].axis[0].y > 100) {
-        sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, 1);
-        sendEvent(fd, EV_KEY, BTN_DPAD_UP, 0);
-	} else if(controllers[controller_index - 1].axis[0].y < -100) {
-        sendEvent(fd, EV_KEY, BTN_DPAD_UP, 1);
-        sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, 0);
-	} else {
-        sendEvent(fd, EV_KEY, BTN_DPAD_UP, 0);
-        sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, 0);
-	}
-
+	//sendEvent(fd, EV_KEY, BTN_A, controllers[controller_index - 1].button_states[A_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_B, controllers[controller_index - 1].button_states[B_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_X, controllers[controller_index - 1].button_states[X_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_Y, controllers[controller_index - 1].button_states[Y_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_TL, controllers[controller_index - 1].button_states[L_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_TR, controllers[controller_index - 1].button_states[R_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_START, controllers[controller_index - 1].button_states[START_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_SELECT, controllers[controller_index - 1].button_states[SELECT_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_EXTRA, controllers[controller_index - 1].button_states[EXTRA_BUTTON]);
+    //sendEvent(fd, EV_KEY, BTN_DPAD_UP, controllers[controller_index - 1].button_states[DPAD_UP]);
+    //sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, controllers[controller_index - 1].button_states[DPAD_DOWN]);
+    //sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, controllers[controller_index - 1].button_states[DPAD_LEFT]);
+    //sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, controllers[controller_index - 1].button_states[DPAD_RIGHT]);
     sendEvent(fd, EV_SYN, SYN_REPORT, 0);
 
-    if(DEBUG) {
+	//
+	//if(controllers[controller_index - 1].axis[0].x > 100) {
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, 1);
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, 0);
+	//} else if(controllers[controller_index - 1].axis[0].x < -100) {
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, 0);
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, 1);
+	//} else {
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_LEFT, 0);
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_RIGHT, 0);
+	//}
+	//
+	//if(controllers[controller_index - 1].axis[0].y > 100) {
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, 1);
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_UP, 0);
+	//} else if(controllers[controller_index - 1].axis[0].y < -100) {
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_UP, 1);
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, 0);
+	//} else {
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_UP, 0);
+    //    sendEvent(fd, EV_KEY, BTN_DPAD_DOWN, 0);
+	//}
+
+
+
+    //sendEvent(fd, EV_SYN, SYN_REPORT, 0);
+
+    if(false) {
         std::cout << "\rAxes: ";
         for(byte i = 0; i < axis_count * 2; ++i) {
             std::cout << std::setw(3) << static_cast<int>(i) << ":" << std::setw(6) << controllers[controller_index - 1].axis[i].x << " " << controllers[controller_index - 1].axis[i].y << " ";

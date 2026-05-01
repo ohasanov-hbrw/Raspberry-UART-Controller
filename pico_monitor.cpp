@@ -210,8 +210,8 @@ int PicoMonitor::openSerialPort(const char* portName) {
     tcgetattr(fd, &options);
 
     // Set baud rate to 115200
-    cfsetispeed(&options, B115200);
-    cfsetospeed(&options, B115200);
+    cfsetispeed(&options, B57600);
+    cfsetospeed(&options, B57600);
 
     // Set 8 data bits, no parity, 1 stop bit
     options.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)

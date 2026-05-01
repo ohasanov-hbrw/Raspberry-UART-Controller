@@ -381,7 +381,18 @@ bool joyCheck(ControllerData controllers[], int c) {
 		if(special_counter >= 1000) {
 			//REBOOT
 		    sync(); // Flush filesystem buffers
-            reboot(RB_AUTOBOOT);
+            std::string command;
+			command = "reboot";
+
+			// Execute the command and handle the output
+			FILE* pipe = popen(command.c_str(), "r");
+			if(pipe){
+				char buffer[128];
+				while(fgets(buffer, 128, pipe) != NULL) {
+				}
+				pclose(pipe);
+			}
+			//reboot(RB_AUTOBOOT);
 			exit(0);
 		}
 		return true;
@@ -389,7 +400,18 @@ bool joyCheck(ControllerData controllers[], int c) {
 		special_counter++;
 		if(special_counter >= 1000) {
 	        sync(); // Flush filesystem buffers
-            reboot(RB_POWER_OFF);
+            std::string command;
+			command = "shutdown -h now";
+
+			// Execute the command and handle the output
+			FILE* pipe = popen(command.c_str(), "r");
+			if(pipe){
+				char buffer[128];
+				while(fgets(buffer, 128, pipe) != NULL) {
+				}
+				pclose(pipe);
+			}
+			//reboot(RB_POWER_OFF);
 			exit(0);
 		}
         return true;

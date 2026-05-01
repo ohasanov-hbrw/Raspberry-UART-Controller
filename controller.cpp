@@ -193,14 +193,20 @@ void ControllerManager::emulateJoystick(byte controller_index, byte button_count
     if(controllers[controller_index - 1].button_states[DPAD_UP]){
         sendEvent(fd, EV_ABS, ABS_HAT0Y, -32768);
     }
-    if(controllers[controller_index - 1].button_states[DPAD_DOWN]){
+    else if(controllers[controller_index - 1].button_states[DPAD_DOWN]){
         sendEvent(fd, EV_ABS, ABS_HAT0Y, 32767);
+    }
+    else {
+        sendEvent(fd, EV_ABS, ABS_HAT0Y, 0);
     }
     if(controllers[controller_index - 1].button_states[DPAD_LEFT]){
         sendEvent(fd, EV_ABS, ABS_HAT0X, -32768);
     }
-    if(controllers[controller_index - 1].button_states[DPAD_RIGHT]){
+    else if(controllers[controller_index - 1].button_states[DPAD_RIGHT]){
         sendEvent(fd, EV_ABS, ABS_HAT0X, 32767);
+    }
+    else{
+        sendEvent(fd, EV_ABS, ABS_HAT0X, 0);
     }
     sendEvent(fd, EV_SYN, SYN_REPORT, 0);
 

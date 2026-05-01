@@ -66,10 +66,9 @@ void ControllerManager::setup_uinput_device(int joystick_id) {
 
     memset(&usetup, 0, sizeof(usetup));
     usetup.id.bustype = BUS_USB;
-    usetup.id.vendor = 0x045e; // Sample Vendor
-    usetup.id.product = 0x028e;// + joystick_id; // Unique product ID for each joystick
-    usetup.id.version=0x110;
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "Microsoft X-Box 360 pad %d", joystick_id);
+    usetup.id.vendor = 0x046d; // Sample Vendor
+    usetup.id.product = 0xc216  + joystick_id; // Unique product ID for each joystick
+    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "F310DirectInput %d", joystick_id);
 
     ioctl(fd, UI_DEV_SETUP, &usetup);
     ioctl(fd, UI_DEV_CREATE);
@@ -141,7 +140,7 @@ void ControllerManager::emulateJoystick(byte controller_index, byte button_count
         else if(i == X_BUTTON) code = BTN_X;
         else if(i == Y_BUTTON) code = BTN_Y;
         else if(i == L_BUTTON) code = BTN_TL;
-        else if(i == R_BUTTON) code = BTN_TRIGGER;
+        else if(i == R_BUTTON) code = BTN_TR;
         else if(i == START_BUTTON) code = BTN_START;
         else if(i == SELECT_BUTTON) code = BTN_SELECT;
         else if(i == EXTRA_BUTTON) code = BTN_EXTRA;

@@ -508,6 +508,9 @@ bool joyCheck(ControllerData controllers[], int c) {
 	}
 	
 	special_counter = 0;
+	if(optionsPressed){
+		return true;
+	}
 	return false;
 }
 

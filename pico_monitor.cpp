@@ -104,7 +104,7 @@ void PicoMonitor::processBuffer() {
         byte* message = buffer + message_start;
 
         if(true) {
-            if(true) std::cout << "\033[A";
+            if(false) std::cout << "\033[A";
             std::cout << "\rExtracted message: ";
             for(size_t j = 0; j < message_len; ++j) {
                 std::cout << std::hex << static_cast<int>(message[j]) << " " << std::dec;
@@ -185,6 +185,7 @@ void PicoMonitor::statusUpdate() {
 	write_data[1] = 6; //Read Backlight Value
 	write(serial_fd, write_data, sizeof(write_data));
 	
+    std::cout << "StatusUpdate\n";
 	//for(int i = 0; i < 4; i++) {
 		request(1, 1); //Read Controller States
 	//}

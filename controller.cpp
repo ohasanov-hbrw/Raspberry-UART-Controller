@@ -16,10 +16,10 @@ ControllerManager::ControllerManager(JoyCallback callback) {
     //FOR DEBUGGG
 	setup_uinput_device(0);
 
-    //for(int i = 0; i < 4; ++i) {
-    //    setup_uinput_device(i + 1);  // Joystick IDs 1 to 4
-	//	controllers[i].id = i;
-    //}
+    for(int i = 0; i < 4; ++i) {
+        //setup_uinput_device(i + 1);  // Joystick IDs 1 to 4
+		controllers[i].id = i;
+    }
 	this->callback = callback;
 }
 
@@ -85,7 +85,7 @@ void ControllerManager::loop() {
 	while(true) {
         monitor->update();
 		callback(controllers, 0);
-        std::this_thread::sleep_for(std::chrono::microseconds(500));
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
     }
 }
 

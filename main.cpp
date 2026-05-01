@@ -396,9 +396,9 @@ bool joyCheck(ControllerData controllers[], int c) {
 	}
 	else if(optionsPressed && xPressed && rPressed && lPressed) {
 		special_counter++;
-		if(special_counter >= 1000) {
+		if(special_counter == 1000) {
 	        std::string command;
-			command = "sudo systemctl restart fbcp";
+			command = "systemctl restart fbcp";
 
 			// Execute the command and handle the output
 			FILE* pipe = popen(command.c_str(), "r");
